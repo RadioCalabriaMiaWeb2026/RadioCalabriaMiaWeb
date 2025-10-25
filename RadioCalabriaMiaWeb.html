@@ -568,54 +568,40 @@ update();
 </div> <!-- chiusura rcm-box -->
 </div> <!-- chiusura container -->
 <script>
-// --- PLAYER HOME ---
+// --- AUDIO ELEMENTS ---
 const audioHome = document.getElementById('radioHome');
 const playBtnHome = document.getElementById('playBtnHome');
 const volHome = document.getElementById('volumeSliderHome');
 const barHome = document.getElementById('progressBarHome');
 
-// --- PLAYER ABOUT ---
 const audioAbout = document.getElementById('radioAbout');
 const playBtnAbout = document.getElementById('playBtnAbout');
 const volAbout = document.getElementById('volumeSliderAbout');
 const barAbout = document.getElementById('progressBarAbout');
 
-// --- URL STREAM ---
-const homeAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // AutoDJ
-const homeLive   = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // Diretta
-const aboutAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv";
-const aboutLive   = "https://stream-179.zeno.fm/h0vgpbvuyx4tv";
+// --- STREAM URLS ---
+const homeAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // Home AutoDJ
+const homeLive   = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // Home Diretta
+const aboutAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // About AutoDJ
+const aboutLive   = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // About Diretta
 
-// --- Funzione Player unica ---
+// --- SETUP PLAYER ---
 function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
   if (!audio || !playBtn || !vol || !bar) return;
 
   let currentStream = autoDJ;
 
   function playStream(url) {
-    if (audio.src !== url) audio.src = url; // Cambia solo se necessario
+    if (audio.src !== url) audio.src = url;
     audio.play().then(() => playBtn.textContent = "❚❚")
                .catch(() => playBtn.textContent = "▶");
   }
 
-  // Avvio iniziale solo se l'utente interagisce o se autoplay consentito
-  audio.src = currentStream;
-
-  // Controllo continuo: se flusso si interrompe, switcha subito
-  audio.addEventListener('error', () => {
-    currentStream = (currentStream === autoDJ) ? live : autoDJ;
-    playStream(currentStream);
-  });
-  audio.addEventListener('ended', () => {
-    currentStream = (currentStream === autoDJ) ? live : autoDJ;
-    playStream(currentStream);
-  });
-
-  // Play/Pausa
+  // Play/Pause button
   playBtn.addEventListener('click', () => {
     if (audio.paused) {
       stopOtherAudios(audio);
-      audio.play().then(() => playBtn.textContent = "❚❚");
+      playStream(currentStream);
     } else {
       audio.pause();
       playBtn.textContent = "▶";
@@ -625,13 +611,28 @@ function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
   // Volume
   vol.addEventListener('input', () => audio.volume = vol.value);
 
-  // Barra animata
+  // Progress bar animation
   setInterval(() => {
     bar.style.width = !audio.paused ? Math.floor(Math.random() * 100) + "%" : "0%";
   }, 200);
+
+  // Switch AutoDJ ⇄ Diretta
+  audio.addEventListener('error', () => {
+    currentStream = (currentStream === autoDJ) ? live : autoDJ;
+    playStream(currentStream);
+  });
+  audio.addEventListener('ended', () => {
+    currentStream = (currentStream === autoDJ) ? live : autoDJ;
+    playStream(currentStream);
+  });
+
+  return () => {
+    audio.pause();
+    playBtn.textContent = "▶";
+  };
 }
 
-// --- Ferma altri player ---
+// --- STOP OTHER PLAYERS ---
 function stopOtherAudios(current) {
   [audioHome, audioAbout].forEach(aud => {
     if (aud && aud !== current && !aud.paused) {
@@ -642,11 +643,11 @@ function stopOtherAudios(current) {
   });
 }
 
-// --- Inizializza player ---
-setupPlayer(audioHome, playBtnHome, volHome, barHome, homeAutoDJ, homeLive);
-setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout, aboutAutoDJ, aboutLive);
+// --- INIT PLAYERS ---
+const stopHome = setupPlayer(audioHome, playBtnHome, volHome, barHome, homeAutoDJ, homeLive);
+const stopAbout = setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout, aboutAutoDJ, aboutLive);
 
-// --- Navigazione tra sezioni ---
+// --- NAVIGATION ---
 const navLinks = document.querySelectorAll('nav.inner-nav a');
 const sections = document.querySelectorAll('.content-section');
 
@@ -658,20 +659,29 @@ navLinks.forEach(link => {
     navLinks.forEach(l => l.classList.remove('active-nav'));
     link.classList.add('active-nav');
 
-    // Ferma player inattivo
-    if (target === 'home') stopOtherAudios(audioHome);
-    else if (target === 'about') stopOtherAudios(audioAbout);
+    // PLAY only in active section
+    if (target === 'home') {
+      stopOtherAudios(audioHome);
+      audioHome.play().then(() => playBtnHome.textContent = "❚❚");
+    } else if (target === 'about') {
+      stopOtherAudios(audioAbout);
+      audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
+    } else {
+      stopOtherAudios(null);
+    }
   });
 });
 
-// --- Avvio autoplay solo se consentito ---
+// --- START AUTOPLAY ON FIRST CLICK ---
 document.addEventListener('DOMContentLoaded', () => {
   document.body.addEventListener('click', () => {
-    if (audioHome.paused) audioHome.play().then(() => playBtnHome.textContent = "❚❚");
-    if (audioAbout.paused) audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
+    const activeSection = document.querySelector('.content-section.active');
+    if (activeSection.id === 'home') audioHome.play().then(() => playBtnHome.textContent = "❚❚");
+    else if (activeSection.id === 'about') audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
   }, { once: true });
 });
 </script>
+
 </body>
 </html>
 
