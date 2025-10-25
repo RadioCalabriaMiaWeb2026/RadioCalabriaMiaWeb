@@ -594,25 +594,28 @@ function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
 
   function playStream(url) {
     if (audio.src !== url) audio.src = url; // Cambia solo se necessario
-    audio.play().then(() => playBtn.textContent = "❚❚").catch(() => {});
+    audio.play().then(() => playBtn.textContent = "❚❚")
+               .catch(() => playBtn.textContent = "▶");
   }
 
-  // Avvio iniziale AutoDJ
-  playStream(autoDJ);
+  // Avvio iniziale solo se l'utente interagisce o se autoplay consentito
+  audio.src = currentStream;
 
-  // Controllo automatico: se flusso si interrompe, passa subito all'altro
-  setInterval(() => {
-    if (audio.readyState < 3 || audio.networkState === 3) {
-      currentStream = (currentStream === autoDJ) ? live : autoDJ;
-      playStream(currentStream);
-    }
-  }, 5000);
+  // Controllo continuo: se flusso si interrompe, switcha subito
+  audio.addEventListener('error', () => {
+    currentStream = (currentStream === autoDJ) ? live : autoDJ;
+    playStream(currentStream);
+  });
+  audio.addEventListener('ended', () => {
+    currentStream = (currentStream === autoDJ) ? live : autoDJ;
+    playStream(currentStream);
+  });
 
   // Play/Pausa
   playBtn.addEventListener('click', () => {
     if (audio.paused) {
       stopOtherAudios(audio);
-      audio.play().then(() => playBtn.textContent = "❚❚").catch(() => {});
+      audio.play().then(() => playBtn.textContent = "❚❚");
     } else {
       audio.pause();
       playBtn.textContent = "▶";
@@ -628,7 +631,7 @@ function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
   }, 200);
 }
 
-// --- Ferma gli altri player attivi ---
+// --- Ferma altri player ---
 function stopOtherAudios(current) {
   [audioHome, audioAbout].forEach(aud => {
     if (aud && aud !== current && !aud.paused) {
@@ -639,7 +642,7 @@ function stopOtherAudios(current) {
   });
 }
 
-// --- Inizializza entrambi i player ---
+// --- Inizializza player ---
 setupPlayer(audioHome, playBtnHome, volHome, barHome, homeAutoDJ, homeLive);
 setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout, aboutAutoDJ, aboutLive);
 
@@ -660,6 +663,15 @@ navLinks.forEach(link => {
     else if (target === 'about') stopOtherAudios(audioAbout);
   });
 });
+
+// --- Avvio autoplay solo se consentito ---
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.addEventListener('click', () => {
+    if (audioHome.paused) audioHome.play().then(() => playBtnHome.textContent = "❚❚");
+    if (audioAbout.paused) audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
+  }, { once: true });
+});
 </script>
 </body>
 </html>
+
