@@ -592,7 +592,7 @@ function setupPlayer(audio, playBtn, vol, bar) {
     setTimeout(() => {
       audio.currentTime = 0;
       playAudio();
-    }, 1000); // riavvio dopo 1 secondo
+    }, 5000); // Riavvio automatico dopo 5 secondi
   }
 
   // Play/Pause button
@@ -613,22 +613,16 @@ function setupPlayer(audio, playBtn, vol, bar) {
     bar.style.width = !audio.paused ? Math.floor(Math.random() * 100) + "%" : "0%";
   }, 200);
 
-  // Rilevamento errori e fine audio
+  // Rilevamento fine o erro
   audio.addEventListener('ended', restartAudio);
   audio.addEventListener('error', restartAudio);
 
-  // Autoplay iniziale
-  playAudio();
-
-  return () => {
-    audio.pause();
-    playBtn.textContent = "▶";
-  };
+  return playAudio; // ritorna funzione per avviare il player
 }
 
 // --- INIT PLAYERS SEPARATI ---
-const stopHome = setupPlayer(audioHome, playBtnHome, volHome, barHome);
-const stopAbout = setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout);
+const playHome = setupPlayer(audioHome, playBtnHome, volHome, barHome);
+const playAbout = setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout);
 
 // --- NAVIGATION ---
 const navLinks = document.querySelectorAll('nav.inner-nav a');
@@ -648,11 +642,11 @@ navLinks.forEach(link => {
 
     // Avvia solo il player della sezione attiva
     if (target === 'home') {
-      stopAbout();
-      audioHome.play().then(() => playBtnHome.textContent = "❚❚");
+      audioAbout.pause();
+      playHome();
     } else if (target === 'about') {
-      stopHome();
-      audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
+      audioHome.pause();
+      playAbout();
     }
   });
 });
@@ -661,14 +655,16 @@ navLinks.forEach(link => {
 document.addEventListener('DOMContentLoaded', () => {
   const activeSection = document.querySelector('.content-section.active');
   if (activeSection.id === 'home') {
-    audioHome.play().then(() => playBtnHome.textContent = "❚❚");
+    playHome();
   } else if (activeSection.id === 'about') {
-    audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
+    playAbout();
   }
 });
 </script>
+
 </body>
 </html>
+
 
 
 
