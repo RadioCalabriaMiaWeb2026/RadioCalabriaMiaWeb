@@ -578,14 +578,14 @@ const homeAutoDJ = "AUTODJ_URL_HOME";
 const aboutLive = "LIVE_URL_ABOUT";
 const aboutAutoDJ = "AUTODJ_URL_ABOUT";
 
-// --- PLAYER SETUP AUTOMATICO ---
+// --- FUNZIONE PER PLAYER AUTOMATICO ---
 function setupAutoPlayer(audio, liveURL, autoDJURL) {
   if (!audio) return;
 
   let currentStream = liveURL;
 
   function playStream(url) {
-    audio.src = url;
+    if (audio.src !== url) audio.src = url;
     audio.play().catch(()=>{}); // evita errori su autoplay
   }
 
@@ -595,23 +595,30 @@ function setupAutoPlayer(audio, liveURL, autoDJURL) {
   }
 
   // Rilevamento fine o errore
-  audio.addEventListener('ended', switchStream);
-  audio.addEventListener('error', switchStream);
+  audio.onended = switchStream;
+  audio.onerror = switchStream;
 
   // Avvio immediato
   playStream(currentStream);
+
+  // Restituisce funzione per fermare il player
+  return () => {
+    audio.pause();
+    audio.src = "";
+  };
 }
 
-// --- AVVIO PLAYER SEPARATI ---
+// --- INIZIALIZZA PLAYER SEPARATI ---
+let stopHome, stopAbout;
+
 document.addEventListener('DOMContentLoaded', () => {
-  // Verifica se la sezione Home è attiva
   const activeSection = document.querySelector('.content-section.active');
   if (!activeSection) return;
 
   if (activeSection.id === 'home') {
-    setupAutoPlayer(audioHome, homeLive, homeAutoDJ);
+    stopHome = setupAutoPlayer(audioHome, homeLive, homeAutoDJ);
   } else if (activeSection.id === 'about') {
-    setupAutoPlayer(audioAbout, aboutLive, aboutAutoDJ);
+    stopAbout = setupAutoPlayer(audioAbout, aboutLive, aboutAutoDJ);
   }
 });
 
@@ -627,19 +634,21 @@ navLinks.forEach(link => {
     sections.forEach(sec => sec.classList.remove('active'));
     document.getElementById(target).classList.add('active');
 
-    // Avvia il player della sezione attiva
+    // Ferma player inattivi e avvia quello corretto
     if (target === 'home') {
-      audioAbout.pause();
-      setupAutoPlayer(audioHome, homeLive, homeAutoDJ);
+      if (stopAbout) stopAbout();
+      stopHome = setupAutoPlayer(audioHome, homeLive, homeAutoDJ);
     } else if (target === 'about') {
-      audioHome.pause();
-      setupAutoPlayer(audioAbout, aboutLive, aboutAutoDJ);
+      if (stopHome) stopHome();
+      stopAbout = setupAutoPlayer(audioAbout, aboutLive, aboutAutoDJ);
     }
   });
 });
 </script>
+
 </body>
 </html>
+
 
 
 
