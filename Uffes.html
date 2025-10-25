@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="shortcut icon" href="https://i.postimg.cc/DZ89GW3d/bbkkkk.png">
+<title>RadioCalabriaMiaWeb</title>
+<style>
+:root{
+    --blue: #0000ff;
+    --blue-dark: #001acc;
+    --white: #ffffff;
+}
+
+body{
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* SLIDESHOW DEL BACKGROUND */
+#bg1, #bg2 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    transition: opacity 1.5s ease-in-out;
+    z-index: -1;
+}
+
+#bg2 {
+    opacity: 0;
+}
+
+.container {
+    display:flex;
+    justify-content:center;
+    padding:79px 16px 40px;
+}
+
+.rcm-box {
+    margin-top: 60px;
+    width:100%;
+    max-width:880px;
+    background: var(--white);
+    border-radius:12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.20);
+    overflow: hidden;
+    position:relative;
+}
+
+nav.inner-nav {
+    display:flex;
+    justify-content:center;
+    gap:18px;
+    background: var(--blue);
+    color:var(--white);
+    padding:12px 10px;
+    align-items:center;
+}
+nav.inner-nav a{
+    color:var(--white);
+    text-decoration:none;
+    font-weight:700;
+    padding:8px 12px;
+    border-radius:8px;
+    transition: background 160ms, transform 160ms;
+}
+nav.inner-nav a:hover{
+    background: rgba(255,255,255,0.12);
+    transform: translateY(-2px);
+}
+nav.inner-nav a.active-nav{
+    background: var(--blue-dark);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.content-wrapper{
+    padding:18px 18px 26px;
+    box-sizing:border-box;
+    position:relative;
+}
+
+.content-section{ display:none; }
+.content-section.active{ display:block; }
+
+.rcm-footer {
+    background: var(--blue);
+    color: var(--white);
+    padding: 14px 14px;
+    text-align:center;
+    font-size:15px;
+    font-weight: bold;
+    border-top: 3px solid var(--blue-dark);
+}
+
+/* PLAYER */
+#modernPlayerShared{
+    width:289px;
+    height:112px;
+    background: linear-gradient(135deg, #ff4d4d, #ffb84d, #4dff88, #4dd2ff);
+    border-radius:12px;
+    box-shadow:0 0 15px rgba(0,0,0,0.4);
+    padding:10px;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+    color:#fff;
+    margin:20px auto;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    align-items:center;
+}
+</style>
+</head>
+<body>
+
+<!-- DIV SFONDO -->
+<div id="bg1" style="background-image: url('https://i.postimg.cc/J4B8sMyn/Radio-Calabria-Mia-Web-Nuovo-Nuovissimo.png'); background-position: center 20%;"></div>
+<div id="bg2" style="background-position: center 20%;"></div>
+
+<div class="container">
+    <div class="rcm-box">
+        <nav class="inner-nav">
+            <a href="javascript:void(0)" data-target="home" class="active-nav">RadioCalabriaMiaWeb</a>
+            <a href="javascript:void(0)" data-target="about">Chi Siamo</a>
+        </nav>
+
+        <div class="content-wrapper">
+            <!-- HOME -->
+            <section id="home" class="content-section active">
+                <center><img src="https://i.postimg.cc/DzRddtkV/bbkkkk.png" alt="Logo RadioCalabriaMiaWeb" width="200" height="200"></center>
+            </section>
+
+            <!-- CHI SIAMO -->
+            <section id="about" class="content-section">
+                <center><img src="https://i.postimg.cc/DzRddtkV/bbkkkk.png" alt="Logo RadioCalabriaMiaWeb" width="200" height="200"></center>
+            </section>
+
+            <!-- PLAYER CONDIVISO -->
+            <div id="modernPlayerShared">
+                <div id="playerTitleShared" style="font-weight:bold; font-size:16px; color:#ffffff; margin-bottom:5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.6);">🎵 RadioCalabriaMiaWeb</div>
+                <div style="width:100%; display:flex; align-items:center; justify-content:space-between;">
+                    <button id="playBtnShared" style="background: linear-gradient(to bottom, #ffffff, #ffe6ff); border:none; border-radius:6px; width:40px; height:40px; font-weight:bold; cursor:pointer; color:#000; font-size:18px; box-shadow:0 2px 5px rgba(0,0,0,0.3);">▶</button>
+                    <input id="volumeSliderShared" type="range" min="0" max="1" step="0.01" value="1">
+                    <span id="statusShared" style="font-size:12px; color:#fff; font-weight:bold;">Live</span>
+                </div>
+                <div style="width:100%; height:6px; background: rgba(255,255,255,0.3); border-radius:3px; margin-top:6px; overflow:hidden;">
+                    <div id="progressBarShared" style="width:0%; height:100%; background:#ffffff; transition: width 0.1s;"></div>
+                </div>
+                <audio id="radioPlayerShared" src="https://stream-179.zeno.fm/h0vgpbvuyx4tv"></audio>
+            </div>
+
+        </div>
+
+        <div class="rcm-footer">
+            &copy;RadioCalabriaMiaWeb 2025 Tutti i Diritti Riservati.
+        </div>
+    </div>
+</div>
+
+<script>
+/* ------------------- NAVIGATION ------------------- */
+const navLinks = document.querySelectorAll('nav.inner-nav a');
+const sections = document.querySelectorAll('.content-wrapper .content-section');
+
+function showSection(name){
+    sections.forEach(s => s.classList.toggle('active', s.id === name));
+    navLinks.forEach(a => a.classList.toggle('active-nav', a.getAttribute('data-target') === name));
+}
+navLinks.forEach(a=>{
+    a.addEventListener('click', ()=> showSection(a.getAttribute('data-target')));
+});
+
+/* ------------------- BACKGROUND SLIDESHOW ------------------- */
+const images = [
+    'https://i.postimg.cc/J4B8sMyn/Radio-Calabria-Mia-Web-Nuovo-Nuovissimo.png',
+    'https://i.postimg.cc/Kcfk07Qw/Radio-Calabria-Mia-Web-Nuovissimo.png',
+    'https://i.postimg.cc/XJCqKhQ7/Radio-Calabria-Mia-Web-Nuovo-Seminuovo.png'
+];
+let current = 0, visible = true;
+const bg1 = document.getElementById('bg1');
+const bg2 = document.getElementById('bg2');
+setInterval(()=>{
+    current = (current + 1) % images.length;
+    if(visible){
+        bg2.style.backgroundImage = `url('${images[current]}')`;
+        bg2.style.opacity = 1; bg1.style.opacity = 0;
+    } else {
+        bg1.style.backgroundImage = `url('${images[current]}')`;
+        bg1.style.opacity = 1; bg2.style.opacity = 0;
+    }
+    visible = !visible;
+}, 6000);
+
+/* ------------------- PLAYER SHARED ------------------- */
+const audio = document.getElementById('radioPlayerShared');
+const playBtn = document.getElementById('playBtnShared');
+const volumeSlider = document.getElementById('volumeSliderShared');
+const progressBar = document.getElementById('progressBarShared');
+
+playBtn.addEventListener('click', ()=>{
+    if(audio.paused){
+        audio.play().catch(()=>{});
+        playBtn.textContent="❚❚";
+    } else {
+        audio.pause();
+        playBtn.textContent="▶";
+    }
+});
+
+volumeSlider.addEventListener('input', ()=> audio.volume = volumeSlider.value);
+
+setInterval(()=>{
+    if(!audio.paused){
+        progressBar.style.width = Math.floor(Math.random()*100)+"%";
+    } else progressBar.style.width="0%";
+}, 200);
+
+audio.play().catch(()=>{});
+</script>
+
+</body>
+</html>
