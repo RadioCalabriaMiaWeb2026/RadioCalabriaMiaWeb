@@ -589,7 +589,7 @@ const aboutLive   = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // About Diretta
 function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
   if (!audio || !playBtn || !vol || !bar) return;
 
-  let currentStream = autoDJ;
+  let currentStream = live; // Parte sempre dalla diretta
 
   function playStream(url) {
     if (audio.src !== url) audio.src = url;
@@ -616,15 +616,14 @@ function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
     bar.style.width = !audio.paused ? Math.floor(Math.random() * 100) + "%" : "0%";
   }, 200);
 
-  // Switch AutoDJ ⇄ Diretta
-  audio.addEventListener('error', () => {
-    currentStream = (currentStream === autoDJ) ? live : autoDJ;
+  // Switch AutoDJ ⇄ Diretta quando finisce il flusso
+  audio.addEventListener('error', switchStream);
+  audio.addEventListener('ended', switchStream);
+
+  function switchStream() {
+    currentStream = (currentStream === live) ? autoDJ : live;
     playStream(currentStream);
-  });
-  audio.addEventListener('ended', () => {
-    currentStream = (currentStream === autoDJ) ? live : autoDJ;
-    playStream(currentStream);
-  });
+  }
 
   return () => {
     audio.pause();
@@ -681,7 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { once: true });
 });
 </script>
-
 </body>
 </html>
+
 
