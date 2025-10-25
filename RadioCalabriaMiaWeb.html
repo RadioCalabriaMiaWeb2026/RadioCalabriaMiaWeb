@@ -141,8 +141,9 @@ input[type=range]::-webkit-slider-thumb{
        Clicca Qui Ascoltaci Dal Player Alternativo
     </a>
 </div>
-<center><img class="rcm-img" src="https://i.postimg.cc/QMDjnhMf/ju.png" alt="Radio Calabria Mia">
-           <!-- Inizio Player -->
+<img class="rcm-img" src="https://i.postimg.cc/c1BC82fj/Ts6zdl-Jie-Iay.gif" alt="Barra Colorata Gif">
+<center><img src="https://i.postimg.cc/Bn1VZjJQ/wwww.png" style="width: 290px;"><!--scritta sopra il Player-->
+<!-- Inizio Player -->
        <center><div class="player-modern">
         <div id="playerTitleHome" style="font-weight:bold;font-size:16px;color:#ffffff;margin-bottom:5px;text-shadow:1px 1px 2px rgba(0,0,0,0.6);">
           🎵 RadioCalabriaMiaWeb
@@ -157,9 +158,9 @@ input[type=range]::-webkit-slider-thumb{
         </div>
         <audio id="radioHome" src="https://stream-179.zeno.fm/h0vgpbvuyx4tv" preload="none"></audio>
       </div>
-  
-                    <img class="rcm-img" src="https://i.postimg.cc/g0c22GPb/112223-removebg-preview.png" alt="Radio Player 2" />
-                    <iframe src="https://radiocalabriamiaweb.github.io/RadioCalabriaMiaWeb/RadioCalabriaMiaWeb6.html" style="border:none; width:100%; max-width:320px; height:420px; border-radius:8px;" scrolling="no"></iframe>
+      <center><img src="https://i.postimg.cc/Zndfcqjs/wwwwwwwwwwwwwwww.png" style="width: 290px;"><!--scritta sopra il Player-->
+     <center><iframe src="https://radiocalabriamiaweb.github.io/RadioCalabriaMiaWeb/RadioCalabriaMiaWeb6.html" style="border:none; width:100%; max-width:320px; height:420px; border-radius:8px;" scrolling="no"></iframe>
+    <img class="rcm-img" src="https://i.postimg.cc/c1BC82fj/Ts6zdl-Jie-Iay.gif" alt="Barra Colorata Gif">
     <center><img src="https://i.postimg.cc/Vsxq6Yph/image.gif" alt="Mano Indicazione" />
     <div style="text-align: center; margin: 20px 0;">
     <a href="https://onlineradiobox.com/it/radiocalabriamiaweb/?cs=it.radiocalabriamiaweb&amp;played=1" 
@@ -480,7 +481,9 @@ update();
        Clicca Qui Ascoltaci Dal Player Alternativo
     </a>
 </div>
-     <!--Inizio Player Chi Siamo-->
+<img class="rcm-img" src="https://i.postimg.cc/c1BC82fj/Ts6zdl-Jie-Iay.gif" alt="Barra Colorata Gif">
+<center><img src="https://i.postimg.cc/Bn1VZjJQ/wwww.png" style="width: 290px;"><!--scritta sopra il Player-->
+<!--Inizio Player Chi Siamo-->
       <center><div class="player-modern">
         <div id="playerTitleAbout" style="font-weight:bold;font-size:16px;color:#ffffff;margin-bottom:5px;text-shadow:1px 1px 2px rgba(0,0,0,0.6);">
           🎶 RadioCalabriaMiaWeb
@@ -495,7 +498,12 @@ update();
         </div>
         <audio id="radioAbout" src="https://stream-179.zeno.fm/h0vgpbvuyx4tv" preload="none"></audio>
       </div>
+<center><img src="https://i.postimg.cc/Zndfcqjs/wwwwwwwwwwwwwwww.png" style="width: 290px;"><!--scritta sopra il Player-->
+<center><iframe src="https://radiocalabriamiaweb.github.io/RadioCalabriaMiaWeb/RadioCalabriaMiaWeb6.html" style="border:none; width:100%; max-width:320px; height:420px; border-radius:8px;" scrolling="no"></iframe>
+<center><img src="https://i.postimg.cc/c1BC82fj/Ts6zdl-Jie-Iay.gif" style="width: 290px;">
 <center><img src="https://i.postimg.cc/15VGCBLc/cccffff.png" alt="Foto Come Siamo Nati chi Siamo" width="600" height="340"></center>
+<center><img src="https://i.postimg.cc/c1BC82fj/Ts6zdl-Jie-Iay.gif" style="width: 290px;">
+
     </section>
 <!-- Fine Player Chi Siamo -->
   </div>
@@ -574,17 +582,19 @@ const playBtnHome = document.getElementById('playBtnHome');
 const volHome = document.getElementById('volumeSliderHome');
 const barHome = document.getElementById('progressBarHome');
 
-playBtnHome.addEventListener('click',()=>{
+playBtnHome.addEventListener('click', () => {
   if(audioHome.paused){
     audioHome.play();
-    playBtnHome.textContent="❚❚";
+    playBtnHome.textContent = "❚❚";
   } else {
     audioHome.pause();
-    playBtnHome.textContent="▶";
+    playBtnHome.textContent = "▶";
   }
 });
-volHome.addEventListener('input',()=>audioHome.volume=volHome.value);
-setInterval(()=>{barHome.style.width=!audioHome.paused?Math.floor(Math.random()*100)+"%":"0%";},200);
+volHome.addEventListener('input', () => audioHome.volume = volHome.value);
+setInterval(() => {
+  barHome.style.width = !audioHome.paused ? Math.floor(Math.random()*100) + "%" : "0%";
+}, 200);
 
 // --- PLAYER ABOUT ---
 const audioAbout = document.getElementById('radioAbout');
@@ -592,48 +602,63 @@ const playBtnAbout = document.getElementById('playBtnAbout');
 const volAbout = document.getElementById('volumeSliderAbout');
 const barAbout = document.getElementById('progressBarAbout');
 
-playBtnAbout.addEventListener('click',()=>{
+playBtnAbout.addEventListener('click', () => {
   if(audioAbout.paused){
     audioAbout.play();
-    playBtnAbout.textContent="❚❚";
+    playBtnAbout.textContent = "❚❚";
   } else {
     audioAbout.pause();
-    playBtnAbout.textContent="▶";
+    playBtnAbout.textContent = "▶";
   }
 });
-volAbout.addEventListener('input',()=>audioAbout.volume=volAbout.value);
-setInterval(()=>{barAbout.style.width=!audioAbout.paused?Math.floor(Math.random()*100)+"%":"0%";},200);
+volAbout.addEventListener('input', () => audioAbout.volume = volAbout.value);
+setInterval(() => {
+  barAbout.style.width = !audioAbout.paused ? Math.floor(Math.random()*100) + "%" : "0%";
+}, 200);
 
-// --- NAVIGAZIONE SEZIONI ---
+// --- AUTOPLAY HOME ALL'APERTURA ---
+document.addEventListener('DOMContentLoaded', () => {
+  if(document.getElementById('home').classList.contains('active')){
+    audioHome.volume = volHome.value;
+    audioHome.play().then(() => playBtnHome.textContent = "❚❚")
+    .catch(() => {
+      // se il browser blocca autoplay, parte al primo click
+      document.body.addEventListener('click', function enableHome(){
+        audioHome.play().then(() => playBtnHome.textContent = "❚❚");
+        document.body.removeEventListener('click', enableHome);
+      });
+    });
+  }
+});
+
+// --- NAVIGAZIONE TRA SEZIONI ---
 const navLinks = document.querySelectorAll('nav.inner-nav a');
 const sections = document.querySelectorAll('.content-section');
 
-navLinks.forEach(link=>{
-  link.addEventListener('click',()=>{
+navLinks.forEach(link => {
+  link.addEventListener('click', () => {
     const target = link.getAttribute('data-target');
 
-    sections.forEach(sec=>{
-      sec.classList.remove('active');
-      if(sec.id===target) sec.classList.add('active');
-    });
+    // Mostra la sezione selezionata
+    sections.forEach(sec => sec.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
 
-    navLinks.forEach(l=>l.classList.remove('active-nav'));
+    // Aggiorna nav
+    navLinks.forEach(l => l.classList.remove('active-nav'));
     link.classList.add('active-nav');
 
-    if(target==='home'){
+    // Gestione audio indipendente
+    if(target === 'home'){
       audioAbout.pause();
-      audioHome.play().catch(()=>{}); 
-      playBtnHome.textContent="❚❚";
-      playBtnAbout.textContent="▶";
-    } else if(target==='about'){
+      playBtnAbout.textContent = "▶";
+      audioHome.play().then(() => playBtnHome.textContent = "❚❚").catch(() => playBtnHome.textContent = "▶");
+    } else if(target === 'about'){
       audioHome.pause();
-      audioAbout.play().catch(()=>{}); 
-      playBtnHome.textContent="▶";
-      playBtnAbout.textContent="❚❚";
+      playBtnHome.textContent = "▶";
+      audioAbout.play().then(() => playBtnAbout.textContent = "❚❚").catch(() => playBtnAbout.textContent = "▶");
     }
   });
 });
 </script>
-
 </body>
 </html>
