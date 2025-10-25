@@ -586,13 +586,17 @@ function setupPlayer(audio, playBtn, vol, bar) {
 
   // Funzione di riavvio super stabile
   function autoRestart() {
-    setTimeout(() => {
-      audio.play().then(() => playBtn.textContent = "❚❚")
-                 .catch(() => playBtn.textContent = "▶");
-    }, 1000); // 1 secondo di ritardo
+    if (!audio) return;
+    // Forza il reload immediato finché non parte
+    const src = audio.src;
+    audio.pause();
+    audio.src = src;
+    audio.load();
+    audio.play().then(() => playBtn.textContent = "❚❚")
+               .catch(() => setTimeout(autoRestart, 500)); // retry ogni 0.5s se non parte subito
   }
 
-  // Aggiungiamo rilevamento fine e errori
+  // Rilevamento fine o errore
   audio.onended = autoRestart;
   audio.onerror = autoRestart;
 
@@ -614,6 +618,10 @@ function setupPlayer(audio, playBtn, vol, bar) {
       ? Math.floor(Math.random() * 100) + "%"
       : "0%";
   }, 200);
+
+  // Avvio immediato
+  audio.play().then(() => playBtn.textContent = "❚❚")
+             .catch(() => {}); // autoplay senza crash
 }
 
 // --- Ferma ogni altro audio attivo ---
@@ -639,22 +647,12 @@ document.addEventListener('DOMContentLoaded', () => {
     audioHome.volume = volHome.value;
     audioHome.play()
       .then(() => playBtnHome.textContent = "❚❚")
-      .catch(() => {
-        document.body.addEventListener('click', function enableHome() {
-          audioHome.play().then(() => playBtnHome.textContent = "❚❚");
-          document.body.removeEventListener('click', enableHome);
-        });
-      });
+      .catch(() => {});
   } else if (activeSection && activeSection.id === 'about' && audioAbout) {
     audioAbout.volume = volAbout.value;
     audioAbout.play()
       .then(() => playBtnAbout.textContent = "❚❚")
-      .catch(() => {
-        document.body.addEventListener('click', function enableAbout() {
-          audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
-          document.body.removeEventListener('click', enableAbout);
-        });
-      });
+      .catch(() => {});
   }
 });
 
@@ -677,14 +675,10 @@ navLinks.forEach(link => {
     // Gestione audio in base alla sezione
     if (target === 'home' && audioHome) {
       stopOtherAudios(audioHome);
-      audioHome.play()
-        .then(() => playBtnHome.textContent = "❚❚")
-        .catch(() => playBtnHome.textContent = "▶");
+      audioHome.play().catch(() => {}); // play immediato
     } else if (target === 'about' && audioAbout) {
       stopOtherAudios(audioAbout);
-      audioAbout.play()
-        .then(() => playBtnAbout.textContent = "❚❚")
-        .catch(() => playBtnAbout.textContent = "▶");
+      audioAbout.play().catch(() => {}); // play immediato
     } else {
       stopOtherAudios(null);
     }
@@ -693,6 +687,7 @@ navLinks.forEach(link => {
 </script>
 </body>
 </html>
+
 
 
 
