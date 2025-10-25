@@ -570,72 +570,52 @@ update();
 <script>
 // --- AUDIO ELEMENTS ---
 const audioHome = document.getElementById('radioHome');
-const playBtnHome = document.getElementById('playBtnHome');
-const volHome = document.getElementById('volumeSliderHome');
-const barHome = document.getElementById('progressBarHome');
-
 const audioAbout = document.getElementById('radioAbout');
-const playBtnAbout = document.getElementById('playBtnAbout');
-const volAbout = document.getElementById('volumeSliderAbout');
-const barAbout = document.getElementById('progressBarAbout');
 
 // --- STREAM URLS ---
-const homeLive = "LIVE_URL_HOME";    // URL Diretta Home
-const homeAutoDJ = "AUTODJ_URL_HOME"; // URL AutoDJ Home
-const aboutLive = "LIVE_URL_ABOUT";    // URL Diretta About
-const aboutAutoDJ = "AUTODJ_URL_ABOUT"; // URL AutoDJ About
+const homeLive = "LIVE_URL_HOME";
+const homeAutoDJ = "AUTODJ_URL_HOME";
+const aboutLive = "LIVE_URL_ABOUT";
+const aboutAutoDJ = "AUTODJ_URL_ABOUT";
 
-// --- SETUP PLAYER ---
-function setupPlayer(audio, playBtn, vol, bar, liveURL, autoDJURL) {
-  if (!audio || !playBtn || !vol || !bar) return;
+// --- PLAYER SETUP AUTOMATICO ---
+function setupAutoPlayer(audio, liveURL, autoDJURL) {
+  if (!audio) return;
 
   let currentStream = liveURL;
-  audio.src = currentStream;
 
   function playStream(url) {
     audio.src = url;
-    audio.play().then(() => playBtn.textContent = "❚❚")
-               .catch(() => playBtn.textContent = "▶");
+    audio.play().catch(()=>{}); // evita errori su autoplay
   }
 
   function switchStream() {
     currentStream = (currentStream === liveURL) ? autoDJURL : liveURL;
-    setTimeout(() => playStream(currentStream), 1000); // Riavvio automatico dopo 1 secondo
+    setTimeout(() => playStream(currentStream), 1000); // riavvio dopo 1 secondo
   }
 
-  // Play/Pause button
-  playBtn.addEventListener('click', () => {
-    if (audio.paused) {
-      playStream(currentStream);
-    } else {
-      audio.pause();
-      playBtn.textContent = "▶";
-    }
-  });
-
-  // Volume
-  vol.addEventListener('input', () => audio.volume = vol.value);
-
-  // Progress bar
-  setInterval(() => {
-    bar.style.width = !audio.paused ? Math.floor(Math.random() * 100) + "%" : "0%";
-  }, 200);
-
-  // Rilevamento fine stream o errore
+  // Rilevamento fine o errore
   audio.addEventListener('ended', switchStream);
   audio.addEventListener('error', switchStream);
 
-  return () => {
-    audio.pause();
-    playBtn.textContent = "▶";
-  };
+  // Avvio immediato
+  playStream(currentStream);
 }
 
-// --- INIT PLAYERS SEPARATI ---
-const stopHome = setupPlayer(audioHome, playBtnHome, volHome, barHome, homeLive, homeAutoDJ);
-const stopAbout = setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout, aboutLive, aboutAutoDJ);
+// --- AVVIO PLAYER SEPARATI ---
+document.addEventListener('DOMContentLoaded', () => {
+  // Verifica se la sezione Home è attiva
+  const activeSection = document.querySelector('.content-section.active');
+  if (!activeSection) return;
 
-// --- NAVIGATION ---
+  if (activeSection.id === 'home') {
+    setupAutoPlayer(audioHome, homeLive, homeAutoDJ);
+  } else if (activeSection.id === 'about') {
+    setupAutoPlayer(audioAbout, aboutLive, aboutAutoDJ);
+  }
+});
+
+// --- NAVIGAZIONE TRA SEZIONI ---
 const navLinks = document.querySelectorAll('nav.inner-nav a');
 const sections = document.querySelectorAll('.content-section');
 
@@ -643,37 +623,24 @@ navLinks.forEach(link => {
   link.addEventListener('click', () => {
     const target = link.getAttribute('data-target');
 
-    // Mostra sezione
+    // Mostra la sezione selezionata
     sections.forEach(sec => sec.classList.remove('active'));
     document.getElementById(target).classList.add('active');
 
-    // Aggiorna nav
-    navLinks.forEach(l => l.classList.remove('active-nav'));
-    link.classList.add('active-nav');
-
-    // Avvia solo il player della sezione attiva
+    // Avvia il player della sezione attiva
     if (target === 'home') {
-      stopAbout();
-      audioHome.play().then(() => playBtnHome.textContent = "❚❚");
+      audioAbout.pause();
+      setupAutoPlayer(audioHome, homeLive, homeAutoDJ);
     } else if (target === 'about') {
-      stopHome();
-      audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
+      audioHome.pause();
+      setupAutoPlayer(audioAbout, aboutLive, aboutAutoDJ);
     }
   });
-});
-
-// --- AUTOPLAY ON LOAD ---
-document.addEventListener('DOMContentLoaded', () => {
-  const activeSection = document.querySelector('.content-section.active');
-  if (activeSection.id === 'home') {
-    audioHome.play().then(() => playBtnHome.textContent = "❚❚");
-  } else if (activeSection.id === 'about') {
-    audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
-  }
 });
 </script>
 </body>
 </html>
+
 
 
 
