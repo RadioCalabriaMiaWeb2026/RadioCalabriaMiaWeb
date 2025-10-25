@@ -582,7 +582,7 @@ const barAbout = document.getElementById('progressBarAbout');
 
 // --- URL STREAM ---
 const homeAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // AutoDJ
-const homeLive = "https://stream-179.zeno.fm/h0vgpbvuyx4tv";   // Diretta (modifica se serve)
+const homeLive = "https://stream-179.zeno.fm/h0vgpbvuyx4tv";   // Diretta
 const aboutAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv";
 const aboutLive = "https://stream-179.zeno.fm/h0vgpbvuyx4tv";
 
@@ -590,28 +590,32 @@ const aboutLive = "https://stream-179.zeno.fm/h0vgpbvuyx4tv";
 function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
   if (!audio || !playBtn || !vol || !bar) return;
 
-  // Gestione cambio automatico AutoDJ ⇄ Diretta
-  function handleStreamEnd() {
-    if(audio.src === autoDJ){
-      audio.src = live;
-      audio.play().catch(()=>{});
-    } else {
-      audio.src = autoDJ;
-      audio.play().catch(()=>{});
+  let currentStream = autoDJ;
+
+  function playStream(url) {
+    if (audio.src !== url) {
+      audio.src = url;
     }
+    audio.play().then(() => playBtn.textContent = "❚❚").catch(() => {});
   }
 
-  audio.addEventListener("ended", handleStreamEnd);
-  audio.addEventListener("error", handleStreamEnd);
-  audio.addEventListener("stalled", handleStreamEnd);
-  audio.addEventListener("waiting", handleStreamEnd);
+  // Avvio iniziale
+  playStream(autoDJ);
+
+  // Controllo ogni 5 secondi se il flusso è attivo
+  setInterval(() => {
+    if (audio.readyState < 3 || audio.networkState === 3) {
+      // Stream non disponibile: passa all'altro
+      currentStream = currentStream === autoDJ ? live : autoDJ;
+      playStream(currentStream);
+    }
+  }, 5000);
 
   // Pulsante Play/Pausa
   playBtn.addEventListener('click', () => {
     if (audio.paused) {
       stopOtherAudios(audio);
-      audio.play();
-      playBtn.textContent = "❚❚";
+      audio.play().then(() => playBtn.textContent = "❚❚").catch(() => {});
     } else {
       audio.pause();
       playBtn.textContent = "▶";
@@ -627,11 +631,6 @@ function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
       ? Math.floor(Math.random() * 100) + "%"
       : "0%";
   }, 200);
-
-  // Avvio automatico con AutoDJ
-  audio.src = autoDJ;
-  audio.volume = vol.value;
-  audio.play().then(() => playBtn.textContent = "❚❚").catch(() => {});
 }
 
 // --- Ferma tutti gli altri audio attivi ---
