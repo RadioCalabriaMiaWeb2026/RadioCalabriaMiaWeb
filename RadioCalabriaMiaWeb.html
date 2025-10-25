@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -485,36 +484,38 @@ update();
 <img class="rcm-img" src="https://i.postimg.cc/c1BC82fj/Ts6zdl-Jie-Iay.gif" alt="Barra Colorata Gif">
 <center><img src="https://i.postimg.cc/Bn1VZjJQ/wwww.png" style="width: 290px;"><!--scritta sopra il Player-->
 <!--Inizio Player Chi Siamo-->
-      <center><div class="player-modern">
-        <div id="playerTitleAbout" style="font-weight:bold;font-size:16px;color:#ffffff;margin-bottom:5px;text-shadow:1px 1px 2px rgba(0,0,0,0.6);">
-          🎶 RadioCalabriaMiaWeb
-        </div>
-        <div style="width:100%;display:flex;align-items:center;justify-content:space-between;">
-          <button id="playBtnAbout" style="background:linear-gradient(to bottom,#ffffff,#ffe6ff);border:none;border-radius:6px;width:40px;height:40px;font-weight:bold;cursor:pointer;color:#000;font-size:18px;">▶</button>
-          <input id="volumeSliderAbout" type="range" min="0" max="1" step="0.01" value="1">
-          <span style="font-size:12px;color:#fff;font-weight:bold;">Live</span>
-        </div>
-        <div style="width:100%;height:6px;background:rgba(255,255,255,0.3);border-radius:3px;margin-top:6px;overflow:hidden;">
-          <div id="progressBarAbout" style="width:0%;height:100%;background:#fff;transition:width 0.1s;"></div>
-        </div>
-        <audio id="radioAbout" src="https://stream-179.zeno.fm/h0vgpbvuyx4tv" preload="none"></audio>
-      </div>
-<center><img src="https://i.postimg.cc/Zndfcqjs/wwwwwwwwwwwwwwww.png" style="width: 290px;"><!--scritta sopra il Player-->
-<center><iframe src="https://radiocalabriamiaweb.github.io/RadioCalabriaMiaWeb/RadioCalabriaMiaWeb6.html" style="border:none; width:100%; max-width:320px; height:420px; border-radius:8px;" scrolling="no"></iframe>
-<center><img src="https://i.postimg.cc/c1BC82fj/Ts6zdl-Jie-Iay.gif" style="width: 290px;">
-<center><img src="https://i.postimg.cc/CMbv2RwC/Chi-Siamo.png" alt="Foto Come Siamo Nati chi Siamo" width="600" height="340"></center>
-<center><img src="https://i.postimg.cc/c1BC82fj/Ts6zdl-Jie-Iay.gif" style="width: 290px;">
-<center><img src="https://i.postimg.cc/L6qch9SF/Regola.png" alt="Scritta" width="600" height="340"></center>
-    </section>
-<!-- Fine Player Chi Siamo -->
+<center>
+  <div class="player-modern">
+    <div id="playerTitleAbout" style="font-weight:bold;font-size:16px;color:#ffffff;margin-bottom:5px;text-shadow:1px 1px 2px rgba(0,0,0,0.6);">
+      🎶 RadioCalabriaMiaWeb
+    </div>
+    <div style="width:100%;display:flex;align-items:center;justify-content:space-between;">
+      <button id="playBtnAbout" style="background:linear-gradient(to bottom,#ffffff,#ffe6ff);border:none;border-radius:6px;width:40px;height:40px;font-weight:bold;cursor:pointer;color:#000;font-size:18px;">▶</button>
+      <input id="volumeSliderAbout" type="range" min="0" max="1" step="0.01" value="1">
+      <span style="font-size:12px;color:#fff;font-weight:bold;">Live</span>
+    </div>
+    <div style="width:100%;height:6px;background:rgba(255,255,255,0.3);border-radius:3px;margin-top:6px;overflow:hidden;">
+      <div id="progressBarAbout" style="width:0%;height:100%;background:#fff;transition:width 0.1s;"></div>
+    </div>
+    <audio id="radioAbout" src="https://stream-179.zeno.fm/h0vgpbvuyx4tv" preload="none"></audio>
   </div>
 
-  <!-- Footer -->
-  <div class="rcm-footer">
-    © 2025 RadioCalabriaMiaWeb Tutti i Diritti Riservati
-  </div>
+  <center><img src="https://i.postimg.cc/Zndfcqjs/wwwwwwwwwwwwwwww.png" style="width: 290px;"></center>
+  <center><iframe src="https://radiocalabriamiaweb.github.io/RadioCalabriaMiaWeb/RadioCalabriaMiaWeb6.html" style="border:none; width:100%; max-width:320px; height:420px; border-radius:8px;" scrolling="no"></iframe></center>
+  <center><img src="https://i.postimg.cc/c1BC82fj/Ts6zdl-Jie-Iay.gif" style="width: 290px;"></center>
+  <center><img src="https://i.postimg.cc/CMbv2RwC/Chi-Siamo.png" alt="Foto Come Siamo Nati chi Siamo" width="600" height="340"></center>
+  <center><img src="https://i.postimg.cc/c1BC82fj/Ts6zdl-Jie-Iay.gif" style="width: 290px;"></center>
+  <center><img src="https://i.postimg.cc/L6qch9SF/Regola.png" alt="Scritta" width="600" height="340"></center>
+</center>
+<!-- Fine Player Chi Siamo -->
+
+<!-- Footer -->
+<div class="rcm-footer">
+  © 2025 RadioCalabriaMiaWeb Tutti i Diritti Riservati
+</div>
+
 <script>
-    // Navigazione tra le sezioni
+    // --- NAVIGAZIONE TRA SEZIONI ---
     (function(){
         const navLinks = document.querySelectorAll('nav.inner-nav a');
         const sections = document.querySelectorAll('.content-wrapper .content-section');
@@ -534,7 +535,7 @@ update();
         showSection('home');
     })();
 
-    // SLIDESHOW CON DISSOLVENZA
+    // --- SLIDESHOW CON DISSOLVENZA ---
     (function(){
         const images = [
             'https://i.postimg.cc/J4B8sMyn/Radio-Calabria-Mia-Web-Nuovo-Nuovissimo.png',
@@ -570,12 +571,6 @@ update();
     })();
 </script>
 
-</body>
-</html>
-
-</div> <!-- chiusura rcm-box -->
-</div> <!-- chiusura container -->
-
 <script>
 // --- PLAYER HOME ---
 const audioHome = document.getElementById('radioHome');
@@ -583,19 +578,21 @@ const playBtnHome = document.getElementById('playBtnHome');
 const volHome = document.getElementById('volumeSliderHome');
 const barHome = document.getElementById('progressBarHome');
 
-playBtnHome.addEventListener('click', () => {
-  if(audioHome.paused){
-    audioHome.play();
-    playBtnHome.textContent = "❚❚";
-  } else {
-    audioHome.pause();
-    playBtnHome.textContent = "▶";
-  }
-});
-volHome.addEventListener('input', () => audioHome.volume = volHome.value);
-setInterval(() => {
-  barHome.style.width = !audioHome.paused ? Math.floor(Math.random()*100) + "%" : "0%";
-}, 200);
+if (audioHome) {
+  playBtnHome.addEventListener('click', () => {
+    if(audioHome.paused){
+      audioHome.play();
+      playBtnHome.textContent = "❚❚";
+    } else {
+      audioHome.pause();
+      playBtnHome.textContent = "▶";
+    }
+  });
+  volHome.addEventListener('input', () => audioHome.volume = volHome.value);
+  setInterval(() => {
+    barHome.style.width = !audioHome.paused ? Math.floor(Math.random()*100) + "%" : "0%";
+  }, 200);
+}
 
 // --- PLAYER ABOUT ---
 const audioAbout = document.getElementById('radioAbout');
@@ -603,8 +600,28 @@ const playBtnAbout = document.getElementById('playBtnAbout');
 const volAbout = document.getElementById('volumeSliderAbout');
 const barAbout = document.getElementById('progressBarAbout');
 
+// ✅ Evita doppio audio: pausa l’altro player se è attivo
+document.addEventListener('DOMContentLoaded', () => {
+  if (audioHome && !audioHome.paused) {
+    audioHome.pause();
+    if (playBtnHome) playBtnHome.textContent = "▶";
+  }
+
+  audioAbout.volume = volAbout.value;
+  audioAbout.play().then(() => playBtnAbout.textContent = "❚❚").catch(() => {
+    document.body.addEventListener('click', function enableAbout(){
+      audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
+      document.body.removeEventListener('click', enableAbout);
+    });
+  });
+});
+
 playBtnAbout.addEventListener('click', () => {
   if(audioAbout.paused){
+    if (audioHome && !audioHome.paused) {
+      audioHome.pause();
+      if (playBtnHome) playBtnHome.textContent = "▶";
+    }
     audioAbout.play();
     playBtnAbout.textContent = "❚❚";
   } else {
@@ -612,18 +629,20 @@ playBtnAbout.addEventListener('click', () => {
     playBtnAbout.textContent = "▶";
   }
 });
+
 volAbout.addEventListener('input', () => audioAbout.volume = volAbout.value);
+
 setInterval(() => {
   barAbout.style.width = !audioAbout.paused ? Math.floor(Math.random()*100) + "%" : "0%";
 }, 200);
 
 // --- AUTOPLAY HOME ALL'APERTURA ---
 document.addEventListener('DOMContentLoaded', () => {
-  if(document.getElementById('home').classList.contains('active')){
+  const homeSection = document.getElementById('home');
+  if(homeSection && homeSection.classList.contains('active') && audioHome){
     audioHome.volume = volHome.value;
     audioHome.play().then(() => playBtnHome.textContent = "❚❚")
     .catch(() => {
-      // se il browser blocca autoplay, parte al primo click
       document.body.addEventListener('click', function enableHome(){
         audioHome.play().then(() => playBtnHome.textContent = "❚❚");
         document.body.removeEventListener('click', enableHome);
@@ -632,7 +651,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// --- NAVIGAZIONE TRA SEZIONI ---
+// --- NAVIGAZIONE TRA SEZIONI CON AUDIO GESTITO ---
 const navLinks = document.querySelectorAll('nav.inner-nav a');
 const sections = document.querySelectorAll('.content-section');
 
@@ -649,17 +668,17 @@ navLinks.forEach(link => {
     link.classList.add('active-nav');
 
     // Gestione audio indipendente
-    if(target === 'home'){
+    if(target === 'home' && audioHome){
       audioAbout.pause();
       playBtnAbout.textContent = "▶";
       audioHome.play().then(() => playBtnHome.textContent = "❚❚").catch(() => playBtnHome.textContent = "▶");
     } else if(target === 'about'){
-      audioHome.pause();
-      playBtnHome.textContent = "▶";
+      if(audioHome){ audioHome.pause(); playBtnHome.textContent = "▶"; }
       audioAbout.play().then(() => playBtnAbout.textContent = "❚❚").catch(() => playBtnAbout.textContent = "▶");
     }
   });
 });
 </script>
+
 </body>
 </html>
