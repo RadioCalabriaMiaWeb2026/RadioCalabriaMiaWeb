@@ -582,36 +582,33 @@ const barAbout = document.getElementById('progressBarAbout');
 
 // --- URL STREAM ---
 const homeAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // AutoDJ
-const homeLive = "https://stream-179.zeno.fm/h0vgpbvuyx4tv";   // Diretta
+const homeLive   = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // Diretta
 const aboutAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv";
-const aboutLive = "https://stream-179.zeno.fm/h0vgpbvuyx4tv";
+const aboutLive   = "https://stream-179.zeno.fm/h0vgpbvuyx4tv";
 
-// --- Funzioni comuni per i player ---
+// --- Funzione Player unica ---
 function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
   if (!audio || !playBtn || !vol || !bar) return;
 
   let currentStream = autoDJ;
 
   function playStream(url) {
-    if (audio.src !== url) {
-      audio.src = url;
-    }
+    if (audio.src !== url) audio.src = url; // Cambia solo se necessario
     audio.play().then(() => playBtn.textContent = "❚❚").catch(() => {});
   }
 
-  // Avvio iniziale
+  // Avvio iniziale AutoDJ
   playStream(autoDJ);
 
-  // Controllo ogni 5 secondi se il flusso è attivo
+  // Controllo automatico: se flusso si interrompe, passa subito all'altro
   setInterval(() => {
     if (audio.readyState < 3 || audio.networkState === 3) {
-      // Stream non disponibile: passa all'altro
-      currentStream = currentStream === autoDJ ? live : autoDJ;
+      currentStream = (currentStream === autoDJ) ? live : autoDJ;
       playStream(currentStream);
     }
   }, 5000);
 
-  // Pulsante Play/Pausa
+  // Play/Pausa
   playBtn.addEventListener('click', () => {
     if (audio.paused) {
       stopOtherAudios(audio);
@@ -622,18 +619,16 @@ function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
     }
   });
 
-  // Slider volume
+  // Volume
   vol.addEventListener('input', () => audio.volume = vol.value);
 
   // Barra animata
   setInterval(() => {
-    bar.style.width = !audio.paused
-      ? Math.floor(Math.random() * 100) + "%"
-      : "0%";
+    bar.style.width = !audio.paused ? Math.floor(Math.random() * 100) + "%" : "0%";
   }, 200);
 }
 
-// --- Ferma tutti gli altri audio attivi ---
+// --- Ferma gli altri player attivi ---
 function stopOtherAudios(current) {
   [audioHome, audioAbout].forEach(aud => {
     if (aud && aud !== current && !aud.paused) {
@@ -655,19 +650,14 @@ const sections = document.querySelectorAll('.content-section');
 navLinks.forEach(link => {
   link.addEventListener('click', () => {
     const target = link.getAttribute('data-target');
-
-    // Mostra la sezione selezionata
     sections.forEach(sec => sec.classList.remove('active'));
     document.getElementById(target).classList.add('active');
-
-    // Aggiorna nav
     navLinks.forEach(l => l.classList.remove('active-nav'));
     link.classList.add('active-nav');
 
-    // Gestione audio
+    // Ferma player inattivo
     if (target === 'home') stopOtherAudios(audioHome);
     else if (target === 'about') stopOtherAudios(audioAbout);
-    else stopOtherAudios(null);
   });
 });
 </script>
