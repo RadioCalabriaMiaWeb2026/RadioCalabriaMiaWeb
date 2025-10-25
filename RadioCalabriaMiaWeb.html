@@ -578,76 +578,75 @@ const playBtnHome = document.getElementById('playBtnHome');
 const volHome = document.getElementById('volumeSliderHome');
 const barHome = document.getElementById('progressBarHome');
 
-if (audioHome) {
-  playBtnHome.addEventListener('click', () => {
-    if(audioHome.paused){
-      audioHome.play();
-      playBtnHome.textContent = "❚❚";
-    } else {
-      audioHome.pause();
-      playBtnHome.textContent = "▶";
-    }
-  });
-  volHome.addEventListener('input', () => audioHome.volume = volHome.value);
-  setInterval(() => {
-    barHome.style.width = !audioHome.paused ? Math.floor(Math.random()*100) + "%" : "0%";
-  }, 200);
-}
-
 // --- PLAYER ABOUT ---
 const audioAbout = document.getElementById('radioAbout');
 const playBtnAbout = document.getElementById('playBtnAbout');
 const volAbout = document.getElementById('volumeSliderAbout');
 const barAbout = document.getElementById('progressBarAbout');
 
-// ✅ Evita doppio audio: pausa l’altro player se è attivo
-document.addEventListener('DOMContentLoaded', () => {
-  if (audioHome && !audioHome.paused) {
-    audioHome.pause();
-    if (playBtnHome) playBtnHome.textContent = "▶";
-  }
+// --- Funzioni comuni per i player ---
+function setupPlayer(audio, playBtn, vol, bar) {
+  if (!audio || !playBtn || !vol || !bar) return;
 
-  audioAbout.volume = volAbout.value;
-  audioAbout.play().then(() => playBtnAbout.textContent = "❚❚").catch(() => {
-    document.body.addEventListener('click', function enableAbout(){
-      audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
-      document.body.removeEventListener('click', enableAbout);
-    });
-  });
-});
-
-playBtnAbout.addEventListener('click', () => {
-  if(audioAbout.paused){
-    if (audioHome && !audioHome.paused) {
-      audioHome.pause();
-      if (playBtnHome) playBtnHome.textContent = "▶";
+  playBtn.addEventListener('click', () => {
+    if (audio.paused) {
+      stopOtherAudios(audio);
+      audio.play();
+      playBtn.textContent = "❚❚";
+    } else {
+      audio.pause();
+      playBtn.textContent = "▶";
     }
-    audioAbout.play();
-    playBtnAbout.textContent = "❚❚";
-  } else {
-    audioAbout.pause();
-    playBtnAbout.textContent = "▶";
-  }
-});
+  });
 
-volAbout.addEventListener('input', () => audioAbout.volume = volAbout.value);
+  vol.addEventListener('input', () => audio.volume = vol.value);
 
-setInterval(() => {
-  barAbout.style.width = !audioAbout.paused ? Math.floor(Math.random()*100) + "%" : "0%";
-}, 200);
+  setInterval(() => {
+    bar.style.width = !audio.paused
+      ? Math.floor(Math.random() * 100) + "%"
+      : "0%";
+  }, 200);
+}
 
-// --- AUTOPLAY HOME ALL'APERTURA ---
+// --- Ferma ogni altro audio attivo ---
+function stopOtherAudios(current) {
+  [audioHome, audioAbout].forEach(aud => {
+    if (aud && aud !== current && !aud.paused) {
+      aud.pause();
+      if (aud === audioHome) playBtnHome.textContent = "▶";
+      if (aud === audioAbout) playBtnAbout.textContent = "▶";
+    }
+  });
+}
+
+// --- Inizializza entrambi i player ---
+setupPlayer(audioHome, playBtnHome, volHome, barHome);
+setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout);
+
+// --- AUTOPLAY SOLO PER LA SEZIONE ATTIVA ---
 document.addEventListener('DOMContentLoaded', () => {
-  const homeSection = document.getElementById('home');
-  if(homeSection && homeSection.classList.contains('active') && audioHome){
+  const activeSection = document.querySelector('.content-section.active');
+
+  if (activeSection && activeSection.id === 'home' && audioHome) {
     audioHome.volume = volHome.value;
-    audioHome.play().then(() => playBtnHome.textContent = "❚❚")
-    .catch(() => {
-      document.body.addEventListener('click', function enableHome(){
-        audioHome.play().then(() => playBtnHome.textContent = "❚❚");
-        document.body.removeEventListener('click', enableHome);
+    audioHome.play()
+      .then(() => playBtnHome.textContent = "❚❚")
+      .catch(() => {
+        document.body.addEventListener('click', function enableHome() {
+          audioHome.play().then(() => playBtnHome.textContent = "❚❚");
+          document.body.removeEventListener('click', enableHome);
+        });
       });
-    });
+  } else if (activeSection && activeSection.id === 'about' && audioAbout) {
+    audioAbout.volume = volAbout.value;
+    audioAbout.play()
+      .then(() => playBtnAbout.textContent = "❚❚")
+      .catch(() => {
+        document.body.addEventListener('click', function enableAbout() {
+          audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
+          document.body.removeEventListener('click', enableAbout);
+        });
+      });
   }
 });
 
@@ -667,18 +666,22 @@ navLinks.forEach(link => {
     navLinks.forEach(l => l.classList.remove('active-nav'));
     link.classList.add('active-nav');
 
-    // Gestione audio indipendente
-    if(target === 'home' && audioHome){
-      audioAbout.pause();
-      playBtnAbout.textContent = "▶";
-      audioHome.play().then(() => playBtnHome.textContent = "❚❚").catch(() => playBtnHome.textContent = "▶");
-    } else if(target === 'about'){
-      if(audioHome){ audioHome.pause(); playBtnHome.textContent = "▶"; }
-      audioAbout.play().then(() => playBtnAbout.textContent = "❚❚").catch(() => playBtnAbout.textContent = "▶");
+    // Gestione audio in base alla sezione
+    if (target === 'home' && audioHome) {
+      stopOtherAudios(audioHome);
+      audioHome.play()
+        .then(() => playBtnHome.textContent = "❚❚")
+        .catch(() => playBtnHome.textContent = "▶");
+    } else if (target === 'about' && audioAbout) {
+      stopOtherAudios(audioAbout);
+      audioAbout.play()
+        .then(() => playBtnAbout.textContent = "❚❚")
+        .catch(() => playBtnAbout.textContent = "▶");
+    } else {
+      stopOtherAudios(null);
     }
   });
 });
 </script>
-
 </body>
 </html>
