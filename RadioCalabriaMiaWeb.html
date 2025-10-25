@@ -567,7 +567,6 @@ update();
 
 </div> <!-- chiusura rcm-box -->
 </div> <!-- chiusura container -->
-
 <script>
 // --- PLAYER HOME ---
 const audioHome = document.getElementById('radioHome');
@@ -581,10 +580,33 @@ const playBtnAbout = document.getElementById('playBtnAbout');
 const volAbout = document.getElementById('volumeSliderAbout');
 const barAbout = document.getElementById('progressBarAbout');
 
+// --- URL STREAM ---
+const homeAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // AutoDJ
+const homeLive = "https://stream-179.zeno.fm/h0vgpbvuyx4tv";   // Diretta (modifica se serve)
+const aboutAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv";
+const aboutLive = "https://stream-179.zeno.fm/h0vgpbvuyx4tv";
+
 // --- Funzioni comuni per i player ---
-function setupPlayer(audio, playBtn, vol, bar) {
+function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
   if (!audio || !playBtn || !vol || !bar) return;
 
+  // Gestione cambio automatico AutoDJ ⇄ Diretta
+  function handleStreamEnd() {
+    if(audio.src === autoDJ){
+      audio.src = live;
+      audio.play().catch(()=>{});
+    } else {
+      audio.src = autoDJ;
+      audio.play().catch(()=>{});
+    }
+  }
+
+  audio.addEventListener("ended", handleStreamEnd);
+  audio.addEventListener("error", handleStreamEnd);
+  audio.addEventListener("stalled", handleStreamEnd);
+  audio.addEventListener("waiting", handleStreamEnd);
+
+  // Pulsante Play/Pausa
   playBtn.addEventListener('click', () => {
     if (audio.paused) {
       stopOtherAudios(audio);
@@ -596,16 +618,23 @@ function setupPlayer(audio, playBtn, vol, bar) {
     }
   });
 
+  // Slider volume
   vol.addEventListener('input', () => audio.volume = vol.value);
 
+  // Barra animata
   setInterval(() => {
     bar.style.width = !audio.paused
       ? Math.floor(Math.random() * 100) + "%"
       : "0%";
   }, 200);
+
+  // Avvio automatico con AutoDJ
+  audio.src = autoDJ;
+  audio.volume = vol.value;
+  audio.play().then(() => playBtn.textContent = "❚❚").catch(() => {});
 }
 
-// --- Ferma ogni altro audio attivo ---
+// --- Ferma tutti gli altri audio attivi ---
 function stopOtherAudios(current) {
   [audioHome, audioAbout].forEach(aud => {
     if (aud && aud !== current && !aud.paused) {
@@ -617,37 +646,10 @@ function stopOtherAudios(current) {
 }
 
 // --- Inizializza entrambi i player ---
-setupPlayer(audioHome, playBtnHome, volHome, barHome);
-setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout);
+setupPlayer(audioHome, playBtnHome, volHome, barHome, homeAutoDJ, homeLive);
+setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout, aboutAutoDJ, aboutLive);
 
-// --- AUTOPLAY SOLO PER LA SEZIONE ATTIVA ---
-document.addEventListener('DOMContentLoaded', () => {
-  const activeSection = document.querySelector('.content-section.active');
-
-  if (activeSection && activeSection.id === 'home' && audioHome) {
-    audioHome.volume = volHome.value;
-    audioHome.play()
-      .then(() => playBtnHome.textContent = "❚❚")
-      .catch(() => {
-        document.body.addEventListener('click', function enableHome() {
-          audioHome.play().then(() => playBtnHome.textContent = "❚❚");
-          document.body.removeEventListener('click', enableHome);
-        });
-      });
-  } else if (activeSection && activeSection.id === 'about' && audioAbout) {
-    audioAbout.volume = volAbout.value;
-    audioAbout.play()
-      .then(() => playBtnAbout.textContent = "❚❚")
-      .catch(() => {
-        document.body.addEventListener('click', function enableAbout() {
-          audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
-          document.body.removeEventListener('click', enableAbout);
-        });
-      });
-  }
-});
-
-// --- NAVIGAZIONE TRA SEZIONI CON AUDIO GESTITO ---
+// --- Navigazione tra sezioni ---
 const navLinks = document.querySelectorAll('nav.inner-nav a');
 const sections = document.querySelectorAll('.content-section');
 
@@ -663,20 +665,10 @@ navLinks.forEach(link => {
     navLinks.forEach(l => l.classList.remove('active-nav'));
     link.classList.add('active-nav');
 
-    // Gestione audio in base alla sezione
-    if (target === 'home' && audioHome) {
-      stopOtherAudios(audioHome);
-      audioHome.play()
-        .then(() => playBtnHome.textContent = "❚❚")
-        .catch(() => playBtnHome.textContent = "▶");
-    } else if (target === 'about' && audioAbout) {
-      stopOtherAudios(audioAbout);
-      audioAbout.play()
-        .then(() => playBtnAbout.textContent = "❚❚")
-        .catch(() => playBtnAbout.textContent = "▶");
-    } else {
-      stopOtherAudios(null);
-    }
+    // Gestione audio
+    if (target === 'home') stopOtherAudios(audioHome);
+    else if (target === 'about') stopOtherAudios(audioAbout);
+    else stopOtherAudios(null);
   });
 });
 </script>
