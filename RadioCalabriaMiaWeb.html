@@ -580,16 +580,16 @@ const volAbout = document.getElementById('volumeSliderAbout');
 const barAbout = document.getElementById('progressBarAbout');
 
 // --- STREAM URLS ---
-const homeAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // Home AutoDJ
-const homeLive   = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // Home Diretta
-const aboutAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // About AutoDJ
-const aboutLive   = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // About Diretta
+const homeAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // AutoDJ Home
+const homeLive   = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // Diretta Home
+const aboutAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // AutoDJ About
+const aboutLive   = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // Diretta About
 
 // --- SETUP PLAYER ---
 function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
   if (!audio || !playBtn || !vol || !bar) return;
 
-  let currentStream = live; // Parte sempre dalla diretta
+  let currentStream = live; // Inizia dalla diretta
 
   function playStream(url) {
     if (audio.src !== url) audio.src = url;
@@ -600,7 +600,6 @@ function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
   // Play/Pause button
   playBtn.addEventListener('click', () => {
     if (audio.paused) {
-      stopOtherAudios(audio);
       playStream(currentStream);
     } else {
       audio.pause();
@@ -616,9 +615,9 @@ function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
     bar.style.width = !audio.paused ? Math.floor(Math.random() * 100) + "%" : "0%";
   }, 200);
 
-  // Switch AutoDJ ⇄ Diretta quando finisce il flusso
-  audio.addEventListener('error', switchStream);
+  // Switch automatico Diretta ↔ AutoDJ
   audio.addEventListener('ended', switchStream);
+  audio.addEventListener('error', switchStream);
 
   function switchStream() {
     currentStream = (currentStream === live) ? autoDJ : live;
@@ -631,18 +630,7 @@ function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
   };
 }
 
-// --- STOP OTHER PLAYERS ---
-function stopOtherAudios(current) {
-  [audioHome, audioAbout].forEach(aud => {
-    if (aud && aud !== current && !aud.paused) {
-      aud.pause();
-      if (aud === audioHome) playBtnHome.textContent = "▶";
-      if (aud === audioAbout) playBtnAbout.textContent = "▶";
-    }
-  });
-}
-
-// --- INIT PLAYERS ---
+// --- INIT PLAYERS SEPARATI ---
 const stopHome = setupPlayer(audioHome, playBtnHome, volHome, barHome, homeAutoDJ, homeLive);
 const stopAbout = setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout, aboutAutoDJ, aboutLive);
 
@@ -653,34 +641,39 @@ const sections = document.querySelectorAll('.content-section');
 navLinks.forEach(link => {
   link.addEventListener('click', () => {
     const target = link.getAttribute('data-target');
+
+    // Mostra sezione
     sections.forEach(sec => sec.classList.remove('active'));
     document.getElementById(target).classList.add('active');
+
+    // Aggiorna nav
     navLinks.forEach(l => l.classList.remove('active-nav'));
     link.classList.add('active-nav');
 
-    // PLAY only in active section
+    // Avvia solo il player della sezione attiva
     if (target === 'home') {
-      stopOtherAudios(audioHome);
+      stopAbout();
       audioHome.play().then(() => playBtnHome.textContent = "❚❚");
     } else if (target === 'about') {
-      stopOtherAudios(audioAbout);
+      stopHome();
       audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
-    } else {
-      stopOtherAudios(null);
     }
   });
 });
 
-// --- START AUTOPLAY ON FIRST CLICK ---
+// --- AUTOPLAY ON LOAD ---
 document.addEventListener('DOMContentLoaded', () => {
-  document.body.addEventListener('click', () => {
-    const activeSection = document.querySelector('.content-section.active');
-    if (activeSection.id === 'home') audioHome.play().then(() => playBtnHome.textContent = "❚❚");
-    else if (activeSection.id === 'about') audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
-  }, { once: true });
+  const activeSection = document.querySelector('.content-section.active');
+  if (activeSection.id === 'home') {
+    audioHome.play().then(() => playBtnHome.textContent = "❚❚");
+  } else if (activeSection.id === 'about') {
+    audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
+  }
 });
 </script>
+
 </body>
 </html>
+
 
 
