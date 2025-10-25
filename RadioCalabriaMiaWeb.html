@@ -584,22 +584,17 @@ const barAbout = document.getElementById('progressBarAbout');
 function setupPlayer(audio, playBtn, vol, bar) {
   if (!audio || !playBtn || !vol || !bar) return;
 
-  // Funzione di riavvio super stabile
+  // Riavvio automatico su errore o fine
   function autoRestart() {
-    if (!audio) return;
-    // Forza il reload immediato finché non parte
-    const src = audio.src;
     audio.pause();
-    audio.src = src;
     audio.load();
-    audio.play().then(() => playBtn.textContent = "❚❚")
-               .catch(() => setTimeout(autoRestart, 500)); // retry ogni 0.5s se non parte subito
+    audio.play().catch(() => setTimeout(autoRestart, 500));
   }
 
-  // Rilevamento fine o errore
   audio.onended = autoRestart;
   audio.onerror = autoRestart;
 
+  // Pulsante Play/Pause
   playBtn.addEventListener('click', () => {
     if (audio.paused) {
       stopOtherAudios(audio);
@@ -611,17 +606,15 @@ function setupPlayer(audio, playBtn, vol, bar) {
     }
   });
 
+  // Volume
   vol.addEventListener('input', () => audio.volume = vol.value);
 
+  // Progress bar
   setInterval(() => {
     bar.style.width = !audio.paused
       ? Math.floor(Math.random() * 100) + "%"
       : "0%";
   }, 200);
-
-  // Avvio immediato
-  audio.play().then(() => playBtn.textContent = "❚❚")
-             .catch(() => {}); // autoplay senza crash
 }
 
 // --- Ferma ogni altro audio attivo ---
@@ -635,7 +628,7 @@ function stopOtherAudios(current) {
   });
 }
 
-// --- Inizializza entrambi i player ---
+// --- Inizializza entrambi i player una volta sola ---
 setupPlayer(audioHome, playBtnHome, volHome, barHome);
 setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout);
 
@@ -645,14 +638,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (activeSection && activeSection.id === 'home' && audioHome) {
     audioHome.volume = volHome.value;
-    audioHome.play()
-      .then(() => playBtnHome.textContent = "❚❚")
-      .catch(() => {});
+    audioHome.play().then(() => playBtnHome.textContent = "❚❚").catch(()=>{});
   } else if (activeSection && activeSection.id === 'about' && audioAbout) {
     audioAbout.volume = volAbout.value;
-    audioAbout.play()
-      .then(() => playBtnAbout.textContent = "❚❚")
-      .catch(() => {});
+    audioAbout.play().then(() => playBtnAbout.textContent = "❚❚").catch(()=>{});
   }
 });
 
@@ -672,13 +661,13 @@ navLinks.forEach(link => {
     navLinks.forEach(l => l.classList.remove('active-nav'));
     link.classList.add('active-nav');
 
-    // Gestione audio in base alla sezione
-    if (target === 'home' && audioHome) {
+    // Avvia il player della sezione attiva senza duplicare
+    if (target === 'home') {
       stopOtherAudios(audioHome);
-      audioHome.play().catch(() => {}); // play immediato
-    } else if (target === 'about' && audioAbout) {
+      if (audioHome.paused) audioHome.play().catch(()=>{});
+    } else if (target === 'about') {
       stopOtherAudios(audioAbout);
-      audioAbout.play().catch(() => {}); // play immediato
+      if (audioAbout.paused) audioAbout.play().catch(()=>{});
     } else {
       stopOtherAudios(null);
     }
@@ -687,6 +676,7 @@ navLinks.forEach(link => {
 </script>
 </body>
 </html>
+
 
 
 
