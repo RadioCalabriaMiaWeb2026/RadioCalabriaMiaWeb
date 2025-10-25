@@ -579,28 +579,26 @@ const playBtnAbout = document.getElementById('playBtnAbout');
 const volAbout = document.getElementById('volumeSliderAbout');
 const barAbout = document.getElementById('progressBarAbout');
 
-// --- STREAM URLS ---
-const homeAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // AutoDJ Home
-const homeLive   = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // Diretta Home
-const aboutAutoDJ = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // AutoDJ About
-const aboutLive   = "https://stream-179.zeno.fm/h0vgpbvuyx4tv"; // Diretta About
-
 // --- SETUP PLAYER ---
-function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
+function setupPlayer(audio, playBtn, vol, bar) {
   if (!audio || !playBtn || !vol || !bar) return;
 
-  let currentStream = live; // Inizia dalla diretta
-
-  function playStream(url) {
-    if (audio.src !== url) audio.src = url;
+  function playAudio() {
     audio.play().then(() => playBtn.textContent = "❚❚")
                .catch(() => playBtn.textContent = "▶");
+  }
+
+  function restartAudio() {
+    setTimeout(() => {
+      audio.currentTime = 0;
+      playAudio();
+    }, 1000); // riavvio dopo 1 secondo
   }
 
   // Play/Pause button
   playBtn.addEventListener('click', () => {
     if (audio.paused) {
-      playStream(currentStream);
+      playAudio();
     } else {
       audio.pause();
       playBtn.textContent = "▶";
@@ -615,14 +613,12 @@ function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
     bar.style.width = !audio.paused ? Math.floor(Math.random() * 100) + "%" : "0%";
   }, 200);
 
-  // Switch automatico Diretta ↔ AutoDJ
-  audio.addEventListener('ended', switchStream);
-  audio.addEventListener('error', switchStream);
+  // Rilevamento errori e fine audio
+  audio.addEventListener('ended', restartAudio);
+  audio.addEventListener('error', restartAudio);
 
-  function switchStream() {
-    currentStream = (currentStream === live) ? autoDJ : live;
-    playStream(currentStream);
-  }
+  // Autoplay iniziale
+  playAudio();
 
   return () => {
     audio.pause();
@@ -631,8 +627,8 @@ function setupPlayer(audio, playBtn, vol, bar, autoDJ, live) {
 }
 
 // --- INIT PLAYERS SEPARATI ---
-const stopHome = setupPlayer(audioHome, playBtnHome, volHome, barHome, homeAutoDJ, homeLive);
-const stopAbout = setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout, aboutAutoDJ, aboutLive);
+const stopHome = setupPlayer(audioHome, playBtnHome, volHome, barHome);
+const stopAbout = setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout);
 
 // --- NAVIGATION ---
 const navLinks = document.querySelectorAll('nav.inner-nav a');
@@ -671,9 +667,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>
-
 </body>
 </html>
+
 
 
 
