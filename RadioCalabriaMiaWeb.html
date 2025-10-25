@@ -579,26 +579,34 @@ const playBtnAbout = document.getElementById('playBtnAbout');
 const volAbout = document.getElementById('volumeSliderAbout');
 const barAbout = document.getElementById('progressBarAbout');
 
+// --- STREAM URLS ---
+const homeLive = "LIVE_URL_HOME";    // URL Diretta Home
+const homeAutoDJ = "AUTODJ_URL_HOME"; // URL AutoDJ Home
+const aboutLive = "LIVE_URL_ABOUT";    // URL Diretta About
+const aboutAutoDJ = "AUTODJ_URL_ABOUT"; // URL AutoDJ About
+
 // --- SETUP PLAYER ---
-function setupPlayer(audio, playBtn, vol, bar) {
+function setupPlayer(audio, playBtn, vol, bar, liveURL, autoDJURL) {
   if (!audio || !playBtn || !vol || !bar) return;
 
-  function playAudio() {
+  let currentStream = liveURL;
+  audio.src = currentStream;
+
+  function playStream(url) {
+    audio.src = url;
     audio.play().then(() => playBtn.textContent = "❚❚")
                .catch(() => playBtn.textContent = "▶");
   }
 
-  function restartAudio() {
-    setTimeout(() => {
-      audio.currentTime = 0;
-      playAudio();
-    }, 5000); // Riavvio automatico dopo 5 secondi
+  function switchStream() {
+    currentStream = (currentStream === liveURL) ? autoDJURL : liveURL;
+    setTimeout(() => playStream(currentStream), 1000); // Riavvio automatico dopo 1 secondo
   }
 
   // Play/Pause button
   playBtn.addEventListener('click', () => {
     if (audio.paused) {
-      playAudio();
+      playStream(currentStream);
     } else {
       audio.pause();
       playBtn.textContent = "▶";
@@ -608,21 +616,24 @@ function setupPlayer(audio, playBtn, vol, bar) {
   // Volume
   vol.addEventListener('input', () => audio.volume = vol.value);
 
-  // Progress bar animation
+  // Progress bar
   setInterval(() => {
     bar.style.width = !audio.paused ? Math.floor(Math.random() * 100) + "%" : "0%";
   }, 200);
 
-  // Rilevamento fine o erro
-  audio.addEventListener('ended', restartAudio);
-  audio.addEventListener('error', restartAudio);
+  // Rilevamento fine stream o errore
+  audio.addEventListener('ended', switchStream);
+  audio.addEventListener('error', switchStream);
 
-  return playAudio; // ritorna funzione per avviare il player
+  return () => {
+    audio.pause();
+    playBtn.textContent = "▶";
+  };
 }
 
 // --- INIT PLAYERS SEPARATI ---
-const playHome = setupPlayer(audioHome, playBtnHome, volHome, barHome);
-const playAbout = setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout);
+const stopHome = setupPlayer(audioHome, playBtnHome, volHome, barHome, homeLive, homeAutoDJ);
+const stopAbout = setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout, aboutLive, aboutAutoDJ);
 
 // --- NAVIGATION ---
 const navLinks = document.querySelectorAll('nav.inner-nav a');
@@ -642,11 +653,11 @@ navLinks.forEach(link => {
 
     // Avvia solo il player della sezione attiva
     if (target === 'home') {
-      audioAbout.pause();
-      playHome();
+      stopAbout();
+      audioHome.play().then(() => playBtnHome.textContent = "❚❚");
     } else if (target === 'about') {
-      audioHome.pause();
-      playAbout();
+      stopHome();
+      audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
     }
   });
 });
@@ -655,15 +666,15 @@ navLinks.forEach(link => {
 document.addEventListener('DOMContentLoaded', () => {
   const activeSection = document.querySelector('.content-section.active');
   if (activeSection.id === 'home') {
-    playHome();
+    audioHome.play().then(() => playBtnHome.textContent = "❚❚");
   } else if (activeSection.id === 'about') {
-    playAbout();
+    audioAbout.play().then(() => playBtnAbout.textContent = "❚❚");
   }
 });
 </script>
-
 </body>
 </html>
+
 
 
 
