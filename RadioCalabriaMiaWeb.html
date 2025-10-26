@@ -584,11 +584,11 @@ const barAbout = document.getElementById('progressBarAbout');
 function setupPlayer(audio, playBtn, vol, bar) {
   if (!audio || !playBtn || !vol || !bar) return;
 
-  // Riavvio automatico su errore o fine
+  // Riavvio automatico su errore o fine dopo 1 secondo
   function autoRestart() {
     audio.pause();
     audio.load();
-    audio.play().catch(() => setTimeout(autoRestart, 500));
+    setTimeout(() => audio.play().catch(autoRestart), 1000);
   }
 
   audio.onended = autoRestart;
@@ -628,18 +628,20 @@ function stopOtherAudios(current) {
   });
 }
 
-// --- Inizializza entrambi i player una volta sola ---
+// --- Inizializza entrambi i player ---
 setupPlayer(audioHome, playBtnHome, volHome, barHome);
 setupPlayer(audioAbout, playBtnAbout, volAbout, barAbout);
 
-// --- AUTOPLAY SOLO PER LA SEZIONE ATTIVA ---
+// --- AUTOPLAY IMMEDIATO PER SEZIONE ATTIVA ---
 document.addEventListener('DOMContentLoaded', () => {
   const activeSection = document.querySelector('.content-section.active');
 
   if (activeSection && activeSection.id === 'home' && audioHome) {
     audioHome.volume = volHome.value;
     audioHome.play().then(() => playBtnHome.textContent = "❚❚").catch(()=>{});
-  } else if (activeSection && activeSection.id === 'about' && audioAbout) {
+  }
+
+  if (activeSection && activeSection.id === 'about' && audioAbout) {
     audioAbout.volume = volAbout.value;
     audioAbout.play().then(() => playBtnAbout.textContent = "❚❚").catch(()=>{});
   }
@@ -661,7 +663,7 @@ navLinks.forEach(link => {
     navLinks.forEach(l => l.classList.remove('active-nav'));
     link.classList.add('active-nav');
 
-    // Avvia il player della sezione attiva senza duplicare
+    // Avvia il player della sezione attiva e ferma l’altro
     if (target === 'home') {
       stopOtherAudios(audioHome);
       if (audioHome.paused) audioHome.play().catch(()=>{});
@@ -676,6 +678,7 @@ navLinks.forEach(link => {
 </script>
 </body>
 </html>
+
 
 
 
